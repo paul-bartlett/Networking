@@ -5,12 +5,12 @@ import datetime
 TCP_IP = '192.168.1.124'
 TCP_PORT = 5005
 
-# Sets up server to handle 1 connection to client
+# Sets up server to handle 1 connection at a time to client
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((TCP_IP, TCP_PORT))
 s.listen(1)
 
-# Server continues running to handle more than 1 connection
+# Server continues running to handle more connections after client is done
 while True:
     # Accepts connection
     c, addr = s.accept()
