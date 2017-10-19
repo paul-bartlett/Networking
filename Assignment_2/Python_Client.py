@@ -2,7 +2,7 @@ import socket
 
 # Set IP and port to communicate
 TCP_IP = input("Enter the IP address of the server: ")
-TCP_PORT = input("Enter the port number of the server: ")
+TCP_PORT = int(input("Enter the port number of the server: "))
 
 # Attempts to connect to server
 print("Attempting to contact server at ",TCP_IP,":",TCP_PORT)

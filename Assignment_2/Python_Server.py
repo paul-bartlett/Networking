@@ -3,7 +3,7 @@ import datetime
 
 # Set IP and port to communicate
 TCP_IP = input("Enter an IP address: ")
-TCP_PORT = input("Enter a port number: ")
+TCP_PORT = int(input("Enter a port number: "))
 
 # Sets up server to handle 1 connection at a time to client
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,6 +12,7 @@ s.listen(1)
 
 # Server continues running to handle more connections after client is done
 while True:
+    print("Waiting for client")
     # Accepts connection
     c, addr = s.accept()
     print('Server Address:', TCP_IP)
