@@ -1,3 +1,6 @@
+# Python 3
+# Enter the IP address and port number of the server to communicate to
+# Enter a request to the server and receive a response or error
 import socket
 
 # Allows user to enter IP and port to communicate

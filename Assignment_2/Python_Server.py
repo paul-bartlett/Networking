@@ -1,3 +1,5 @@
+# Python 3
+# Enter an IP address and port number in the command line for clients to communticate on
 import socket
 import datetime
 
