@@ -2,8 +2,8 @@ import socket
 import datetime
 
 # Set IP and port to communicate
-TCP_IP = '192.168.1.124'
-TCP_PORT = 5005
+TCP_IP = input("Enter an IP address: ")
+TCP_PORT = input("Enter a port number: ")
 
 # Sets up server to handle 1 connection at a time to client
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
