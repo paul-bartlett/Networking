@@ -1,6 +1,6 @@
 import socket
 
-# Set IP and port to communicate
+# Allows user to enter IP and port to communicate
 TCP_IP = input("Enter the IP address of the server: ")
 TCP_PORT = int(input("Enter the port number of the server: "))
 
