@@ -28,12 +28,12 @@ while True:
     #Compare Checksums to test for corrupt data
     UDP_Packet_Data = struct.Struct('I I 32s')
     if UDP_Packet[3] == chksum:
-        print('CheckSums Match, Packet OK')
-        values = (1,0,chksum)
-        UDP_Packet = UDP_Packet_Data.pack(*values)
-        sock.sendto(UDP_Packet, addr)
+        print('Check Sums Match, Packet OK')
+        values = (1,0,chksum) # (ACK, SEQ, checksum)
     else:
         print('Checksums Do Not Match, Packet Corrupt')
-        values = (0,0,chksum)
-        UDP_Packet = UDP_Packet_Data.pack(*values)
-        sock.sendto(UDP_Packet, addr) 
+        values = (0,0,chksum) # (NAK, SEQ, checksum)
+
+    #Send ACK or NAK to client
+    UDP_Packet = UDP_Packet_Data.pack(*values)
+    sock.sendto(UDP_Packet, addr) 
