@@ -24,6 +24,7 @@ def udp_send(message):
     sock = socket.socket(socket.AF_INET, # Internet
         socket.SOCK_DGRAM) # UDP
     sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
+    print('sent message:',values)
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
 
     #Receive ACK or NAK

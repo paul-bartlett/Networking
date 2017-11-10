@@ -36,4 +36,4 @@ while True:
 
     #Send ACK or NAK to client
     UDP_Packet = UDP_Packet_Data.pack(*values)
-    sock.sendto(UDP_Packet, addr) 
+    sock.sendto(UDP_Packet, addr)
