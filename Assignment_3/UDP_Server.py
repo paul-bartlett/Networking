@@ -1,3 +1,5 @@
+# Python3 UDP Server
+# No command line required, handles checksum errors and sequence number mismatches
 import binascii
 import socket
 import struct
@@ -25,7 +27,7 @@ while True:
     packer = struct.Struct('I 8s')
     packed_data = packer.pack(*values)
     chksum =  bytes(hashlib.md5(packed_data).hexdigest(), encoding="UTF-8")
-    #Compare Checksums to test for corrupt data
+    #Compare Checksums and sequence numbers to test for corrupt data and retransmissions
     UDP_Packet_Data = struct.Struct('I 32s')
     if UDP_Packet[2] == chksum and UDP_Packet[0] == SEQ:
         print('Checksums and sequence numbers match, packet OK')
