@@ -4,24 +4,24 @@ import struct
 import sys
 import hashlib
 
-UDP_IP = "192.168.2.25"
+UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
 unpacker = struct.Struct('I 32s')
 SEQ = 0
+chksum = [None] * 2
 
 def udp_send(message):
-    global SEQ
+    global SEQ, chksum
     #Create the Checksum
     values = (SEQ,message)
     UDP_Data = struct.Struct('I 8s')
     packed_data = UDP_Data.pack(*values)
-    chksum =  bytes(hashlib.md5(packed_data).hexdigest(), encoding="UTF-8")
+    chksum[SEQ] =  bytes(hashlib.md5(packed_data).hexdigest(), encoding="UTF-8")
 
     #Build the UDP Packet
-    values = (SEQ,message,chksum)
+    values = (SEQ,message,chksum[SEQ])
     UDP_Packet_Data = struct.Struct('I 8s 32s')
     UDP_Packet = UDP_Packet_Data.pack(*values)
-    SEQ = (SEQ + 1) % 2 #Set next SEQ number
 
     #Send the UDP Packet
     flag = 1 #Terminate loop when successful
@@ -34,13 +34,16 @@ def udp_send(message):
 
         #Check if received an uncorrupted packet with ACK
         UDP_Packet = unpacker.unpack(data)
-        if UDP_Packet[0] == 1 and UDP_Packet[1] == chksum:
+        if UDP_Packet[0] == 1 and UDP_Packet[1] == chksum[SEQ]:
             print("Checksums match and received ACK:", UDP_Packet)
             flag = 0
         elif UDP_Packet[0] == 0:
             print("Received NAK, resending packet:", UDP_Packet)
+        elif chksum[(SEQ + 1) % 2] == chksum[SEQ]:
+            print("Duplicate ACK received, resending packet")
         else:
-            print("Checksums do not match, resending packet:", UDP_Packet)
+            print("Checksums do not match, resending packet:", UDP_Packet)   
+    SEQ = (SEQ + 1) % 2 #Set next SEQ number
         
 
 print("UDP target IP:", UDP_IP)
