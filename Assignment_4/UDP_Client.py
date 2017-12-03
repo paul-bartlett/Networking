@@ -13,7 +13,7 @@ unpacker = struct.Struct('I 32s')
 SEQ = 0
 chksum = [None] * 2 #Remember last checksum for duplicate ACK
 
-def create_packet(message):
+def send_packet(message):
     global SEQ, chksum
 
     #Create the Checksum
@@ -26,11 +26,6 @@ def create_packet(message):
     values = (SEQ,message,chksum[SEQ])
     UDP_Packet_Data = struct.Struct('I 8s 32s')
     UDP_Packet = UDP_Packet_Data.pack(*values)
-    print("Created packet:",values)
-    return UDP_Packet
-
-def send_packet(UDP_Packet):
-    global SEQ, chksum
 
     #Send the UDP Packet
     flag = 1 #Terminate loop when successful
@@ -38,9 +33,9 @@ def send_packet(UDP_Packet):
         sock = socket.socket(socket.AF_INET, # Internet
                 socket.SOCK_DGRAM) # UDP
         sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
-        print('Sent message')
+        print("Sent packet:",values)
 
-        #Listen for ACKs
+        #Listen for ACKs with timeout
         timeout = 0.009
         ready = select.select([sock], [], [], timeout)
         if ready[0]: #If not timed out receive packet
@@ -66,6 +61,6 @@ def send_packet(UDP_Packet):
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
 
-send_packet(create_packet(b'NCC-1701'))
-send_packet(create_packet(b'NCC-1664'))
-send_packet(create_packet(b'NCC-1017'))
+send_packet(b'NCC-1701')
+send_packet(b'NCC-1664')
+send_packet(b'NCC-1017')

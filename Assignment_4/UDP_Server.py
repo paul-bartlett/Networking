@@ -1,4 +1,4 @@
-# Python3 UDP Server
+    # Python3 UDP Server
 # No command line required, handles checksum errors, sequence number mismatches, and duplicate packets
 import binascii
 import socket
@@ -21,8 +21,7 @@ while True:
     #Receive Data
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
     UDP_Packet = unpacker.unpack(data)
-    print("Received from:", addr)
-    print("Received message:", UDP_Packet)
+    print("Received from:", addr, "message", UDP_Packet)
     #Create the Checksum for comparison
     values = (UDP_Packet[0],UDP_Packet[1])
     packer = struct.Struct('I 8s')
