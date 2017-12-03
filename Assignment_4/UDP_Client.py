@@ -1,5 +1,5 @@
 # Python3 UDP Client
-# udp_send will send a message to server, method calls are at the bottom
+# create_packet will create a packet with a message, send_packet will send the created packet to the server, method calls are at the bottom
 import binascii
 import socket
 import struct
@@ -34,18 +34,21 @@ def send_packet(UDP_Packet):
 
     #Send the UDP Packet
     flag = 1 #Terminate loop when successful
-    while flag: #Resends when NAK received, duplicate ACK, or corrupted packet
+    while flag: #Resends when NAK received, duplicate ACK, corrupted packet, or timeout
         sock = socket.socket(socket.AF_INET, # Internet
                 socket.SOCK_DGRAM) # UDP
         sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
         print('Sent message')
+
         #Listen for ACKs
-        ready = select.select([sock], [], [], 0.1)
-        if ready[0]: #If not timed out
+        timeout = 0.009
+        ready = select.select([sock], [], [], timeout)
+        if ready[0]: #If not timed out receive packet
             data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
         else:
             print("Timeout, resending packet")
             continue
+
         #Check if received an uncorrupted packet with ACK
         UDP_Packet_recv = unpacker.unpack(data)
         if chksum[(SEQ + 1) % 2] == chksum[SEQ]:
@@ -56,12 +59,13 @@ def send_packet(UDP_Packet):
         elif UDP_Packet_recv[0] == 0:
             print("Received NAK, resending packet:", UDP_Packet_recv)
         else:
-            print("Checksums do not match, resending packet:", UDP_Packet_recv)   
+            print("Checksums do not match, resending packet:", UDP_Packet_recv)
+
     SEQ = (SEQ + 1) % 2 #Set next SEQ number
 
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
 
 send_packet(create_packet(b'NCC-1701'))
-send_packet(create_packet(b'NCC-1017'))
+send_packet(create_packet(b'NCC-1664'))
 send_packet(create_packet(b'NCC-1017'))
