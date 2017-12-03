@@ -5,7 +5,8 @@ import socket
 import struct
 import sys
 import hashlib
-from threading import Timer
+import select
+
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
 unpacker = struct.Struct('I 32s')
@@ -38,9 +39,13 @@ def send_packet(UDP_Packet):
                 socket.SOCK_DGRAM) # UDP
         sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
         print('Sent message')
-        data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-         #Cancels timer if packet received before it runs out
-
+        #Listen for ACKs
+        ready = select.select([sock], [], [], 0.1)
+        if ready[0]: #If not timed out
+            data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+        else:
+            print("Timeout, resending packet")
+            continue
         #Check if received an uncorrupted packet with ACK
         UDP_Packet_recv = unpacker.unpack(data)
         if chksum[(SEQ + 1) % 2] == chksum[SEQ]:
@@ -54,19 +59,9 @@ def send_packet(UDP_Packet):
             print("Checksums do not match, resending packet:", UDP_Packet_recv)   
     SEQ = (SEQ + 1) % 2 #Set next SEQ number
 
-def packet_timeout(values, UDP_Packet):
-    print("Timeout, resending packet")
-    send_packet(UDP_Packet)
-
 print("UDP target IP:", UDP_IP)
 print("UDP target port:", UDP_PORT)
 
-UDP_Packet = create_packet(b'NCC-1701')
-#Start timer before sending packet
-timer = Timer(0.009, send_packet, [UDP_Packet]).start()
-#UDP_Packet2 = create_packet(b'NCC-1017')
-#timer.start()
-#timer = Timer(1, send_packet, [UDP_Packet]).start()
-#UDP_Packet3 = create_packet(b'NCC-1017')
-#timer.start()
-#timer = Timer(1, send_packet, [UDP_Packet]).start()
+send_packet(create_packet(b'NCC-1701'))
+send_packet(create_packet(b'NCC-1017'))
+send_packet(create_packet(b'NCC-1017'))
